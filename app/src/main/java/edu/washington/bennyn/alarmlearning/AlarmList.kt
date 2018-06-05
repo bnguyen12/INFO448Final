@@ -1,17 +1,21 @@
 package edu.washington.bennyn.alarmlearning
 
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import com.orhanobut.hawk.Hawk
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.widget.Button
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_alarm_list.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -27,6 +31,7 @@ class AlarmList : AppCompatActivity() {
         val submitButton = findViewById<Button>(R.id.submitAlarm)
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
         val chartsButton = findViewById<ImageView>(R.id.chartsButton)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Setup menu buttons
         menu.setOnClickListener {
@@ -44,6 +49,7 @@ class AlarmList : AppCompatActivity() {
         if (settings.getBoolean("firstCheck", true)) {
             Log.d("firstCheck", "This app is being opened for the first time")
             Hawk.put("tasksDone", 0)
+            Hawk.put("tasksTotal", 0)
             Hawk.put("alarmNames", arrayListOf(String))
             settings.edit().putBoolean("firstCheck", false).apply()
         } else {
@@ -67,7 +73,7 @@ class AlarmList : AppCompatActivity() {
                             amPm = "AM"
                         }
 
-                        val timeInString = String.format(Locale.getDefault(), "%02d:%02d %s", hour, minute, amPm)
+                        val timeInString = String.format(Locale.getDefault(), "%02d:%02d%s", hour, minute, amPm)
                         beginTime.text = timeInString
                     },
                     hour, minute, false)
@@ -105,11 +111,20 @@ class AlarmList : AppCompatActivity() {
                 val inflater = this.layoutInflater
                 inflater.inflate(R.layout.custom_dialog, null)
                 builder.setTitle("Is this a random alarm? If not I'll go by the beginning time you chose")
-                builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which -> //If random
                     //Do something if it's random
                 })
-                builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
-                    //Do something if its not random
+                builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which -> //If not random
+                    val intent = Intent(this, AlarmReceiver::class.java)
+                    intent.putExtra("message", alarmName.text.toString())
+                    val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+                    val time = beginTime.text.toString()
+                    val dateFormat = SimpleDateFormat("hh:mmaa")
+                    val alarmTime = dateFormat.parse(time)
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = System.currentTimeMillis()
+                    calendar.time = alarmTime
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
                 })
                 builder.create().show()
             }
