@@ -44,6 +44,7 @@ class AlarmList : AppCompatActivity() {
         if (settings.getBoolean("firstCheck", true)) {
             Log.d("firstCheck", "This app is being opened for the first time")
             Hawk.put("tasksDone", 0)
+            Hawk.put("alarmNames", arrayListOf(String))
             settings.edit().putBoolean("firstCheck", false).apply()
         } else {
             Log.d("firstCheck", "This app has data already present")

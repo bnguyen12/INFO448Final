@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AlarmList" />
-        <activity android:name=".DataViz"></activity>
+        <activity android:name=".DataViz" />
+        <activity android:name=".LocationAlarmSetter"></activity>
     </application>
 
 </manifest>
