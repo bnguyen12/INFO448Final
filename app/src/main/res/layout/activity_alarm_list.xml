@@ -80,4 +80,32 @@
         android:textSize="8pt"
         android:textAlignment="center"/>
 
+    <com.michaldrabik.tapbarmenulib.TapBarMenu
+        android:id="@+id/tapBarMenu"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="20dp"
+        app:tbm_backgroundColor="#137161">
+        <ImageView
+            android:id="@+id/listButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/lists_icon"
+            />
+        <ImageView
+            android:id="@+id/chartsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/charts_icon"
+            android:clickable="true"
+            />
+    </com.michaldrabik.tapbarmenulib.TapBarMenu>
+
 </android.support.constraint.ConstraintLayout>

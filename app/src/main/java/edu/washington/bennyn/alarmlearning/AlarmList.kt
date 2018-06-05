@@ -8,7 +8,10 @@ import android.widget.TextView
 import com.orhanobut.hawk.Hawk
 import android.app.TimePickerDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.widget.Button
+import android.widget.ImageView
+import kotlinx.android.synthetic.main.activity_alarm_list.*
 import java.util.*
 
 
@@ -22,14 +25,27 @@ class AlarmList : AppCompatActivity() {
         val endTime = findViewById<TextView>(R.id.endTime)
         val alarmName = findViewById<TextView>(R.id.alarmNameView)
         val submitButton = findViewById<Button>(R.id.submitAlarm)
+        val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
+        val chartsButton = findViewById<ImageView>(R.id.chartsButton)
 
+        // Setup menu buttons
+        menu.setOnClickListener {
+            tapBarMenu.toggle()
+        }
+
+        chartsButton.setOnClickListener {
+            val intent = Intent(this, DataViz::class.java)
+            startActivity(intent)
+        }
+
+        // Check if this has been opened before. If so, populate a list of alarms
         Hawk.init(this).build() //use Hawk to store all sorts of things easy in memory for later use
         val settings = getSharedPreferences("preferencesFile", 0)
         if (settings.getBoolean("firstCheck", true)) {
             Log.d("firstCheck", "This app is being opened for the first time")
             Hawk.put("tasksDone", 0)
             settings.edit().putBoolean("firstCheck", false).apply()
-        } else { //build list view of alarms from memory
+        } else {
             Log.d("firstCheck", "This app has data already present")
         }
 
