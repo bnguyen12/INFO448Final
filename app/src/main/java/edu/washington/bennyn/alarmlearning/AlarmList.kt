@@ -6,13 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import com.orhanobut.hawk.Hawk
-import android.widget.TimePicker
 import android.app.TimePickerDialog
 import android.content.DialogInterface
-import android.content.Intent
-import android.provider.Settings
 import android.widget.Button
-import kotlinx.android.synthetic.main.activity_alarm_list.*
 import java.util.*
 
 
@@ -44,7 +40,17 @@ class AlarmList : AppCompatActivity() {
             val minute = c.get(Calendar.MINUTE)
             val timePickerDialog = TimePickerDialog(this,
                     TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-                        val timeInString : String = "${hourOfDay}:${minute}"
+                        var hour = hourOfDay % 12
+                        if (hour == 0) {
+                            hour = 12
+                        }
+
+                        var amPm = "PM"
+                        if (hourOfDay < 12) {
+                            amPm = "AM"
+                        }
+
+                        val timeInString = String.format(Locale.getDefault(), "%02d:%02d %s", hour, minute, amPm)
                         beginTime.text = timeInString
                     },
                     hour, minute, false)
@@ -58,7 +64,17 @@ class AlarmList : AppCompatActivity() {
             val minute = c.get(Calendar.MINUTE)
             val timePickerDialog = TimePickerDialog(this,
                     TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-                        val timeInString : String = "${hourOfDay}:${minute}"
+                        var hour = hourOfDay % 12
+                        if (hour == 0) {
+                            hour = 12
+                        }
+
+                        var amPm = "PM"
+                        if (hourOfDay < 12) {
+                            amPm = "AM"
+                        }
+
+                        val timeInString = String.format(Locale.getDefault(), "%02d:%02d %s", hour, minute, amPm)
                         endTime.text = timeInString
                     },
                     hour, minute, false)
