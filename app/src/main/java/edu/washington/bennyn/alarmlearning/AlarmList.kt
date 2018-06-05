@@ -35,7 +35,7 @@ class AlarmList : AppCompatActivity() {
 
         // Setup menu buttons
         menu.setOnClickListener {
-            tapBarMenu.toggle()
+            menu.toggle()
         }
 
         chartsButton.setOnClickListener {
