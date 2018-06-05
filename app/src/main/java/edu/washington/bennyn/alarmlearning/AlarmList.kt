@@ -1,9 +1,20 @@
 package edu.washington.bennyn.alarmlearning
 
+import android.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import com.orhanobut.hawk.Hawk
+import android.widget.TimePicker
+import android.app.TimePickerDialog
+import android.content.DialogInterface
+import android.content.Intent
+import android.provider.Settings
+import android.widget.Button
+import kotlinx.android.synthetic.main.activity_alarm_list.*
+import java.util.*
+
 
 class AlarmList : AppCompatActivity() {
 
@@ -11,14 +22,64 @@ class AlarmList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alarm_list)
 
+        val beginTime = findViewById<TextView>(R.id.beginTime)
+        val endTime = findViewById<TextView>(R.id.endTime)
+        val alarmName = findViewById<TextView>(R.id.alarmNameView)
+        val submitButton = findViewById<Button>(R.id.submitAlarm)
+
         Hawk.init(this).build() //use Hawk to store all sorts of things easy in memory for later use
         val settings = getSharedPreferences("preferencesFile", 0)
         if (settings.getBoolean("firstCheck", true)) {
             Log.d("firstCheck", "This app is being opened for the first time")
             Hawk.put("tasksDone", 0)
             settings.edit().putBoolean("firstCheck", false).apply()
-        } else {
+        } else { //build list view of alarms from memory
             Log.d("firstCheck", "This app has data already present")
+        }
+
+        //Fill in the beginning time for one of the views
+        beginTime.setOnClickListener {
+            val c = Calendar.getInstance()
+            val hour = c.get(Calendar.HOUR_OF_DAY)
+            val minute = c.get(Calendar.MINUTE)
+            val timePickerDialog = TimePickerDialog(this,
+                    TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                        val timeInString : String = "${hourOfDay}:${minute}"
+                        beginTime.text = timeInString
+                    },
+                    hour, minute, false)
+            timePickerDialog.show()
+        }
+
+        //Fill in the end time for one of the views
+        endTime.setOnClickListener {
+            val c = Calendar.getInstance()
+            val hour = c.get(Calendar.HOUR_OF_DAY)
+            val minute = c.get(Calendar.MINUTE)
+            val timePickerDialog = TimePickerDialog(this,
+                    TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                        val timeInString : String = "${hourOfDay}:${minute}"
+                        endTime.text = timeInString
+                    },
+                    hour, minute, false)
+            timePickerDialog.show()
+        }
+
+        // Submit the alarm and get input on whether or not it's a random alarm
+        submitButton.setOnClickListener {
+            if (!endTime.text.isBlank() && !beginTime.text.isBlank() && !alarmName.text.isBlank()) {
+                val builder = AlertDialog.Builder(this)
+                val inflater = this.layoutInflater
+                inflater.inflate(R.layout.custom_dialog, null)
+                builder.setTitle("Is this a random alarm? If not I'll go by the beginning time you chose")
+                builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                    //Do something if it's random
+                })
+                builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+                    //Do something if its not random
+                })
+                builder.create().show()
+            }
         }
     }
 }
