@@ -12,6 +12,9 @@
         <receiver android:name=".AlarmReceiver"
             android:enabled="true"
             android:exported="true" />
+        <receiver android:name=".UpdateReceiver"
+            android:enabled="true"
+            android:exported="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
