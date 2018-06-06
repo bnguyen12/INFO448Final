@@ -1,8 +1,12 @@
 package edu.washington.bennyn.alarmlearning
 
+import android.Manifest
+import android.Manifest.permission
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
@@ -10,6 +14,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Check if there's permissions to send SMS. If not, then ask
+        if (checkCallingOrSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), 1)
+        }
 
         val launchBtn = findViewById<Button>(R.id.launchBtn)
         launchBtn.setOnClickListener {

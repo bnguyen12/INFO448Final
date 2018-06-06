@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextView
 import com.orhanobut.hawk.Hawk
 import android.app.TimePickerDialog
 import android.content.Context
@@ -14,8 +13,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import android.widget.Button
-import android.widget.ImageView
+import android.telephony.SmsManager
+import android.text.InputType
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_alarm_list.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,17 +33,8 @@ class AlarmList : AppCompatActivity() {
         val submitButton = findViewById<Button>(R.id.submitAlarm)
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
         val chartsButton = findViewById<ImageView>(R.id.chartsButton)
+        val messageBtn = findViewById<ImageView>(R.id.messageButton)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        // Setup menu buttons
-        menu.setOnClickListener {
-            menu.toggle()
-        }
-
-        chartsButton.setOnClickListener {
-            val intent = Intent(this, DataViz::class.java)
-            startActivity(intent)
-        }
 
         // Check if this has been opened before. If so, populate a list of alarms
         Hawk.init(this).build() //use Hawk to store all sorts of things easy in memory for later use
@@ -58,6 +49,40 @@ class AlarmList : AppCompatActivity() {
             Log.d("firstCheck", "This app has data already present")
         }
 
+        // Setup menu buttons
+        menu.setOnClickListener {
+            menu.toggle()
+        }
+
+        chartsButton.setOnClickListener {
+            val intent = Intent(this, DataViz::class.java)
+            startActivity(intent)
+        }
+
+        messageBtn.setOnClickListener {
+            val input = EditText(this)
+            var message = "Do you want to text this number how many tasks you've done? You've completed "
+            message += (Hawk.get("tasksDone") as Int).toString() + " tasks"
+            input.inputType = InputType.TYPE_CLASS_PHONE
+            val builder = AlertDialog.Builder(this)
+            builder.setView(input)
+            builder.setTitle("SMS Your Results")
+            builder.setMessage(message)
+            builder.setPositiveButton("Send", DialogInterface.OnClickListener { dialog, which ->
+                if (input.text.toString().length == 10) {
+                    val smsMessage = "Hey, I've finished ${Hawk.get("tasksDone") as Int} tasks so far!"
+                    SmsManager.getDefault().sendTextMessage(input.text.toString(), null,
+                            smsMessage, null, null)
+                } else {
+                    Toast.makeText(this, "Not a valid number", Toast.LENGTH_SHORT).show()
+                }
+            })
+            builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                //do nothing
+            })
+            builder.show()
+        }
+
         //Fill in the beginning time for one of the views
         beginTime.setOnClickListener {
             val c = Calendar.getInstance()
@@ -69,12 +94,10 @@ class AlarmList : AppCompatActivity() {
                         if (hour == 0) {
                             hour = 12
                         }
-
                         var amPm = "PM"
                         if (hourOfDay < 12) {
                             amPm = "AM"
                         }
-
                         val timeInString = String.format(Locale.getDefault(), "%02d:%02d%s", hour, minute, amPm)
                         beginTime.text = timeInString
                     },
@@ -93,12 +116,10 @@ class AlarmList : AppCompatActivity() {
                         if (hour == 0) {
                             hour = 12
                         }
-
                         var amPm = "PM"
                         if (hourOfDay < 12) {
                             amPm = "AM"
                         }
-
                         val timeInString = String.format(Locale.getDefault(), "%02d:%02d%s", hour, minute, amPm)
                         endTime.text = timeInString
                     },
