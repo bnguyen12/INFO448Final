@@ -86,7 +86,8 @@
         android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="20dp"
-        app:tbm_backgroundColor="#137161">
+        app:tbm_backgroundColor="#137161"
+        app:tbm_showItems="true">
         <ImageView
             android:id="@+id/listButton"
             android:layout_width="0dp"
@@ -104,6 +105,31 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:src="@drawable/charts_icon"
+            android:clickable="true"
+            />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+        <ImageView
+            android:id="@+id/messageButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/message_icon"
+            android:clickable="true"
+            />
+        <ImageView
+            android:id="@+id/locationButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/location_icon"
             android:clickable="true"
             />
     </com.michaldrabik.tapbarmenulib.TapBarMenu>
