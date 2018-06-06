@@ -99,7 +99,7 @@ class AlarmList : AppCompatActivity() {
                             amPm = "AM"
                         }
 
-                        val timeInString = String.format(Locale.getDefault(), "%02d:%02d %s", hour, minute, amPm)
+                        val timeInString = String.format(Locale.getDefault(), "%02d:%02d%s", hour, minute, amPm)
                         endTime.text = timeInString
                     },
                     hour, minute, false)
