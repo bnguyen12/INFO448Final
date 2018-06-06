@@ -35,6 +35,7 @@ class AlarmList : AppCompatActivity() {
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
         val chartsButton = findViewById<ImageView>(R.id.chartsButton)
         val messageBtn = findViewById<ImageView>(R.id.messageButton)
+        val listBtn = findViewById<ImageView>(R.id.listButton)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Check if this has been opened before. If so, populate a list of alarms
@@ -83,6 +84,11 @@ class AlarmList : AppCompatActivity() {
                 //do nothing
             })
             builder.show()
+        }
+
+        listBtn.setOnClickListener {
+            val intent = Intent(this, RealList::class.java)
+            startActivity(intent)
         }
 
         //Fill in the beginning time for one of the views
@@ -145,6 +151,9 @@ class AlarmList : AppCompatActivity() {
                     val end = stringToTime(endTime.text.toString())
                     val randomTime = getRandomTime(begin, end)
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, randomTime.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
+                    alarmName.text = ""
+                    beginTime.text = ""
+                    endTime.text = ""
                 })
                 builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which -> //If not random
                     val intent = Intent(this, AlarmReceiver::class.java)
@@ -154,6 +163,10 @@ class AlarmList : AppCompatActivity() {
                     val time = beginTime.text.toString()
                     val calendar = stringToTime(time)
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
+                    alarmName.text = ""
+                    beginTime.text = ""
+                    endTime.text = ""
+                    categoryView.text = ""
                 })
                 builder.create().show()
 
