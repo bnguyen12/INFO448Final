@@ -24,8 +24,8 @@ class AlarmReceiver: BroadcastReceiver() {
         yesButton.putExtra("answer", true)
         val yesIntent = PendingIntent.getBroadcast(context, 1, yesButton, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val mBuilder = NotificationCompat.Builder(context) //works on API 26 and lower
-                .setSmallIcon(R.drawable.clock)
+        val mBuilder = NotificationCompat.Builder(context!!, "notificationChannel") //works on API 26 and lower
+                .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle("AlarmLearning")
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
