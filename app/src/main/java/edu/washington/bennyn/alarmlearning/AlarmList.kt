@@ -44,7 +44,8 @@ class AlarmList : AppCompatActivity() {
             Log.d("firstCheck", "This app is being opened for the first time")
             Hawk.put("tasksDone", 0)
             Hawk.put("tasksTotal", 0)
-            Hawk.put("mapOfAlarms", mutableMapOf<String, ArrayList<String>>())
+            Hawk.put("mapOfAlarms", mutableMapOf<String, ArrayList<String>>()) // [category, [[alarm names]]
+            Hawk.put("categoryStats", mutableMapOf<String, ArrayList<Int>>()) // [category, [tasks accomplished, tasks total]
             settings.edit().putBoolean("firstCheck", false).apply()
         } else {
             Log.d("firstCheck", "This app has data already present")
@@ -138,6 +139,7 @@ class AlarmList : AppCompatActivity() {
                 builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which -> //If random
                     val intent = Intent(this, AlarmReceiver::class.java)
                     intent.putExtra("message", alarmName.text.toString())
+                    intent.putExtra("categoryName", categoryView.text.toString())
                     val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
                     val begin = stringToTime(beginTime.text.toString())
                     val end = stringToTime(endTime.text.toString())
@@ -147,6 +149,7 @@ class AlarmList : AppCompatActivity() {
                 builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which -> //If not random
                     val intent = Intent(this, AlarmReceiver::class.java)
                     intent.putExtra("message", alarmName.text.toString())
+                    intent.putExtra("categoryName", categoryView.text.toString())
                     val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
                     val time = beginTime.text.toString()
                     val calendar = stringToTime(time)
@@ -158,9 +161,12 @@ class AlarmList : AppCompatActivity() {
                 var map : MutableMap<String, ArrayList<String>> = Hawk.get("mapOfAlarms")
                 val givenCategory = categoryView.text.toString()
                 var categories = map.keys
+                var categoryStats = Hawk.get<MutableMap<String, Array<Int>>>("categoryStats")
                 // If the list of categories doesn't contain this cateogry, add it
                 if (!categories.contains(givenCategory)) {
                     map.set(givenCategory, ArrayList<String>())
+                    categoryStats.set(givenCategory, arrayOf(0, 0))
+                    Hawk.put("categoryStats", categoryStats)
                 }
                 var listOfAlarms = map.get(givenCategory)
                 if (!listOfAlarms!!.contains(alarmName.text.toString())) {

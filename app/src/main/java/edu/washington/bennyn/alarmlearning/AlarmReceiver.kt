@@ -15,13 +15,16 @@ class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.e("CheckIntent", "got it!")
         val message = intent!!.getStringExtra("message")
+        val categoryName = intent!!.getStringExtra("categoryName")
 
         val noButton = Intent(context, UpdateReceiver::class.java)
         noButton.putExtra("answer", false)
+        noButton.putExtra("categoryName", categoryName)
         val noIntent = PendingIntent.getBroadcast(context, 0, noButton, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val yesButton = Intent(context, UpdateReceiver::class.java)
         yesButton.putExtra("answer", true)
+        yesButton.putExtra("categoryName", categoryName)
         val yesIntent = PendingIntent.getBroadcast(context, 1, yesButton, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val mBuilder = NotificationCompat.Builder(context!!, "notificationChannel") //works on API 26 and lower
@@ -41,18 +44,26 @@ class UpdateReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         NotificationManagerCompat.from(context!!).cancel(0) //cancel the notification after button press
         val answer = intent!!.getBooleanExtra("answer", true)
+        val categoryName = intent!!.getStringExtra("categoryName")
         Log.e("answerReceived", answer.toString())
 
         Hawk.init(context).build()
         val tasksDone = Hawk.get<Int>("tasksDone")
         val tasksTotal = Hawk.get<Int>("tasksTotal")
-
+        val categoryStats = Hawk.get<MutableMap<String, Array<Int>>>("categoryStats")
+        var stats = categoryStats[categoryName]!!
         if (answer) {
             Hawk.put("tasksDone", tasksDone + 1)
+            stats[0]++ //tasks in category accomplished
         }
 
+        stats[1]++  //total tasks in category
+        categoryStats.set(categoryName, stats)
+        Hawk.put("categoryStats", categoryStats)
         Hawk.put("tasksTotal", tasksTotal + 1)
         Log.e("tasksDone", tasksDone.toString())
         Log.e("tasksTotal", tasksTotal.toString())
+        Log.e("tasksDoneForCategory", stats[0].toString())
+        Log.e("tasksTotalForCategory", stats[1].toString())
     }
 }
