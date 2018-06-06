@@ -12,6 +12,8 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import android.widget.Button
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_alarm_list.*
