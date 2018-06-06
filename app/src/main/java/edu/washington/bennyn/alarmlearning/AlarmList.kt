@@ -27,6 +27,7 @@ class AlarmList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alarm_list)
 
+        val categoryView = findViewById<TextView>(R.id.categoryView)
         val beginTime = findViewById<TextView>(R.id.beginTime)
         val endTime = findViewById<TextView>(R.id.endTime)
         val alarmName = findViewById<TextView>(R.id.alarmNameView)
@@ -43,7 +44,7 @@ class AlarmList : AppCompatActivity() {
             Log.d("firstCheck", "This app is being opened for the first time")
             Hawk.put("tasksDone", 0)
             Hawk.put("tasksTotal", 0)
-            Hawk.put("alarmNames", arrayListOf(String))
+            Hawk.put("mapOfAlarms", mutableMapOf<String, ArrayList<String>>())
             settings.edit().putBoolean("firstCheck", false).apply()
         } else {
             Log.d("firstCheck", "This app has data already present")
@@ -129,7 +130,7 @@ class AlarmList : AppCompatActivity() {
 
         // Submit the alarm and get input on whether or not it's a random alarm
         submitButton.setOnClickListener {
-            if (!endTime.text.isBlank() && !beginTime.text.isBlank() && !alarmName.text.isBlank()) {
+            if (!endTime.text.isBlank() && !beginTime.text.isBlank() && !alarmName.text.isBlank() && !categoryView.text.isBlank()) {
                 val builder = AlertDialog.Builder(this)
                 val inflater = this.layoutInflater
                 inflater.inflate(R.layout.custom_dialog, null)
@@ -152,6 +153,21 @@ class AlarmList : AppCompatActivity() {
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
                 })
                 builder.create().show()
+
+                // Create maps and arrays for a category and the alarms associated with it
+                var map : MutableMap<String, ArrayList<String>> = Hawk.get("mapOfAlarms")
+                val givenCategory = categoryView.text.toString()
+                var categories = map.keys
+                // If the list of categories doesn't contain this cateogry, add it
+                if (!categories.contains(givenCategory)) {
+                    map.set(givenCategory, ArrayList<String>())
+                }
+                var listOfAlarms = map.get(givenCategory)
+                if (!listOfAlarms!!.contains(alarmName.text.toString())) {
+                    listOfAlarms!!.add(alarmName.text.toString())
+                }
+                map.set(givenCategory, listOfAlarms)
+                Hawk.put("mapOfAlarms", map)
             }
         }
     }
