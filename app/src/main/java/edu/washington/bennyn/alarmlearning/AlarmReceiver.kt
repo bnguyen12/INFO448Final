@@ -18,11 +18,11 @@ class AlarmReceiver: BroadcastReceiver() {
 
         val noButton = Intent(context, UpdateReceiver::class.java)
         noButton.putExtra("answer", false)
-        val noIntent = PendingIntent.getBroadcast(context, 1, noButton, PendingIntent.FLAG_UPDATE_CURRENT)
+        val noIntent = PendingIntent.getBroadcast(context, 0, noButton, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val yesButton = Intent(context, UpdateReceiver::class.java)
         yesButton.putExtra("answer", true)
-        val yesIntent = PendingIntent.getBroadcast(context, 0, yesButton, PendingIntent.FLAG_UPDATE_CURRENT)
+        val yesIntent = PendingIntent.getBroadcast(context, 1, yesButton, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val mBuilder = NotificationCompat.Builder(context) //works on API 26 and lower
                 .setSmallIcon(R.drawable.clock)
@@ -32,14 +32,14 @@ class AlarmReceiver: BroadcastReceiver() {
                 .addAction(R.drawable.alarm_off, "ignore", noIntent)
                 .addAction(R.drawable.alarm_on, "finished", yesIntent)
         val notificationMngr = NotificationManagerCompat.from(context!!)
-        notificationMngr.notify(1, mBuilder.build())
+        notificationMngr.notify(0, mBuilder.build())
     }
 }
 
 // Updates whether or not the user did the action from the alarm
 class UpdateReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        NotificationManagerCompat.from(context!!).cancel(1) //cancel the notification after button press
+        NotificationManagerCompat.from(context!!).cancel(0) //cancel the notification after button press
         val answer = intent!!.getBooleanExtra("answer", true)
         Log.e("answerReceived", answer.toString())
 

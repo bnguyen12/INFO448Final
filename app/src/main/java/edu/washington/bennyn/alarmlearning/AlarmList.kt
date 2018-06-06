@@ -114,22 +114,47 @@ class AlarmList : AppCompatActivity() {
                 inflater.inflate(R.layout.custom_dialog, null)
                 builder.setTitle("Is this a random alarm? If not I'll go by the beginning time you chose")
                 builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which -> //If random
-                    //Do something if it's random
+                    val intent = Intent(this, AlarmReceiver::class.java)
+                    intent.putExtra("message", alarmName.text.toString())
+                    val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+                    val begin = stringToTime(beginTime.text.toString())
+                    val end = stringToTime(endTime.text.toString())
+                    val randomTime = getRandomTime(begin, end)
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, randomTime.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
                 })
                 builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which -> //If not random
                     val intent = Intent(this, AlarmReceiver::class.java)
                     intent.putExtra("message", alarmName.text.toString())
                     val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
                     val time = beginTime.text.toString()
-                    val dateFormat = SimpleDateFormat("hh:mmaa")
-                    val alarmTime = dateFormat.parse(time)
-                    val calendar = Calendar.getInstance()
-                    calendar.timeInMillis = System.currentTimeMillis()
-                    calendar.time = alarmTime
+                    val calendar = stringToTime(time)
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
                 })
                 builder.create().show()
             }
         }
+    }
+
+
+    // Returns a random time between two calendar times
+    private fun getRandomTime(begin: Calendar, end: Calendar): Calendar {
+        val rnd = Random()
+        val min = begin.timeInMillis
+        val max = end.timeInMillis
+        val randomNum = min + rnd.nextLong()%(max - min + 1)
+        val res = Calendar.getInstance()
+        res.timeInMillis = randomNum
+        return res
+    }
+
+    // Returns calendar time given a string in this format: hh:mmaa
+    private fun stringToTime(givenTime: String): Calendar {
+        val time = givenTime
+        val dateFormat = SimpleDateFormat("hh:mmaa")
+        val alarmTime = dateFormat.parse(time)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar.time = alarmTime
+        return calendar
     }
 }
