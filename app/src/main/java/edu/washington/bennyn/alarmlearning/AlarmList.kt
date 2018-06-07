@@ -33,11 +33,10 @@ class AlarmList : AppCompatActivity() {
         val alarmName = findViewById<TextView>(R.id.alarmNameView)
         val submitButton = findViewById<Button>(R.id.submitAlarm)
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
-        val chartsButton = findViewById<ImageView>(R.id.chartsButton)
-        val messageBtn = findViewById<ImageView>(R.id.messageButton)
-        val listBtn = findViewById<ImageView>(R.id.listButton)
-        val locationBtn = findViewById<ImageView>(R.id.locationButton)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        // Set menu bar buttons
+        setBtnListeners()
 
         // Check if this has been opened before. If so, populate a list of alarms
         Hawk.init(this).build() //use Hawk to store all sorts of things easy in memory for later use
@@ -56,45 +55,6 @@ class AlarmList : AppCompatActivity() {
         // Setup menu buttons
         menu.setOnClickListener {
             menu.toggle()
-        }
-
-        chartsButton.setOnClickListener {
-            val intent = Intent(this, DataViz::class.java)
-            startActivity(intent)
-        }
-
-        locationBtn.setOnClickListener {
-            val intent = Intent(this, LocationAlarmSetter::class.java)
-            startActivity(intent)
-        }
-
-        messageBtn.setOnClickListener {
-            val input = EditText(this)
-            var message = "Do you want to text this number how many tasks you've done? You've completed "
-            message += (Hawk.get("tasksDone") as Int).toString() + " tasks"
-            input.inputType = InputType.TYPE_CLASS_PHONE
-            val builder = AlertDialog.Builder(this)
-            builder.setView(input)
-            builder.setTitle("SMS Your Results")
-            builder.setMessage(message)
-            builder.setPositiveButton("Send", DialogInterface.OnClickListener { dialog, which ->
-                if (input.text.toString().length == 10) {
-                    val smsMessage = "Hey, I've finished ${Hawk.get("tasksDone") as Int} tasks so far!"
-                    SmsManager.getDefault().sendTextMessage(input.text.toString(), null,
-                            smsMessage, null, null)
-                } else {
-                    Toast.makeText(this, "Not a valid number", Toast.LENGTH_SHORT).show()
-                }
-            })
-            builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
-                //do nothing
-            })
-            builder.show()
-        }
-
-        listBtn.setOnClickListener {
-            val intent = Intent(this, RealList::class.java)
-            startActivity(intent)
         }
 
         //Fill in the beginning time for one of the views
@@ -218,5 +178,51 @@ class AlarmList : AppCompatActivity() {
         calendar.timeInMillis = System.currentTimeMillis()
         calendar.time = alarmTime
         return calendar
+    }
+
+    private fun setBtnListeners() {
+        val chartsButton = findViewById<ImageView>(R.id.chartsButton)
+        val messageBtn = findViewById<ImageView>(R.id.messageButton)
+        val listBtn = findViewById<ImageView>(R.id.listButton)
+        val locationBtn = findViewById<ImageView>(R.id.locationButton)
+
+        chartsButton.setOnClickListener {
+            val intent = Intent(this, DataViz::class.java)
+            startActivity(intent)
+        }
+
+        locationBtn.setOnClickListener {
+            val intent = Intent(this, LocationAlarmSetter::class.java)
+            startActivity(intent)
+        }
+
+        messageBtn.setOnClickListener {
+            val input = EditText(this)
+            var message = "Do you want to text this number how many tasks you've done? You've completed "
+            message += (Hawk.get("tasksDone") as Int).toString() + " tasks"
+            input.inputType = InputType.TYPE_CLASS_PHONE
+            val builder = AlertDialog.Builder(this)
+            builder.setView(input)
+            builder.setTitle("SMS Your Results")
+            builder.setMessage(message)
+            builder.setPositiveButton("Send", { dialog, which ->
+                if (input.text.toString().length == 10) {
+                    val smsMessage = "Hey, I've finished ${Hawk.get("tasksDone") as Int} tasks so far!"
+                    SmsManager.getDefault().sendTextMessage(input.text.toString(), null,
+                            smsMessage, null, null)
+                } else {
+                    Toast.makeText(this, "Not a valid number", Toast.LENGTH_SHORT).show()
+                }
+            })
+            builder.setNegativeButton("Cancel", { dialog, which ->
+                //do nothing
+            })
+            builder.show()
+        }
+
+        listBtn.setOnClickListener {
+            val intent = Intent(this, RealList::class.java)
+            startActivity(intent)
+        }
     }
 }
