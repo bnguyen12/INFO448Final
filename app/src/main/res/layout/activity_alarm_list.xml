@@ -24,8 +24,9 @@
 
     <EditText
         android:id="@+id/alarmNameView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="30dp"
         android:ems="10"
@@ -33,27 +34,27 @@
         android:hint="Type in a task"
         android:inputType="textPersonName"
         android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@+id/endTime"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
         android:id="@+id/submitAlarm"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:enabled="true"
         android:text="OK"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/endTime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/alarmNameView"
-        app:layout_constraintTop_toTopOf="@+id/alarmNameView" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryView" />
 
     <EditText
         android:id="@+id/beginTime"
-        android:layout_width="115dp"
+        android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
@@ -70,8 +71,9 @@
 
     <EditText
         android:id="@+id/endTime"
-        android:layout_width="115dp"
+        android:layout_width="0dp"
         android:layout_height="45dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:ems="10"
@@ -82,6 +84,7 @@
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="8pt"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/beginTime"
         app:layout_constraintTop_toBottomOf="@+id/alarmNameView" />
 
@@ -142,15 +145,27 @@
         android:id="@+id/categoryView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:ems="10"
         android:fontFamily="@font/pluto_sans_regular"
         android:hint="Category name"
         android:inputType="none"
         android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@+id/endTime"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/alarmNameView"
+        app:layout_constraintStart_toStartOf="@+id/alarmNameView"
         app:layout_constraintTop_toBottomOf="@+id/beginTime" />
+
+    <Button
+        android:id="@+id/smsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="30dp"
+        android:text="Send Progress (SMS)"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submitAlarm" />
 
 </android.support.constraint.ConstraintLayout>

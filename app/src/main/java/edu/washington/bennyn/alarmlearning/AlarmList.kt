@@ -33,6 +33,7 @@ class AlarmList : AppCompatActivity() {
         val alarmName = findViewById<TextView>(R.id.alarmNameView)
         val submitButton = findViewById<Button>(R.id.submitAlarm)
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
+        val smsButton = findViewById<Button>(R.id.smsButton)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Set menu bar buttons
@@ -55,6 +56,30 @@ class AlarmList : AppCompatActivity() {
         // Setup menu buttons
         menu.setOnClickListener {
             menu.toggle()
+        }
+
+        smsButton.setOnClickListener {
+            val input = EditText(this)
+            var message = "Do you want to text this number how many tasks you've done? You've completed "
+            message += (Hawk.get("tasksDone") as Int).toString() + " tasks"
+            input.inputType = InputType.TYPE_CLASS_PHONE
+            val builder = AlertDialog.Builder(this)
+            builder.setView(input)
+            builder.setTitle("SMS Your Results")
+            builder.setMessage(message)
+            builder.setPositiveButton("Send", { dialog, which ->
+                if (input.text.toString().length == 10) {
+                    val smsMessage = "Hey, I've finished ${Hawk.get("tasksDone") as Int} tasks so far!"
+                    SmsManager.getDefault().sendTextMessage(input.text.toString(), null,
+                            smsMessage, null, null)
+                } else {
+                    Toast.makeText(this, "Not a valid number", Toast.LENGTH_SHORT).show()
+                }
+            })
+            builder.setNegativeButton("Cancel", { dialog, which ->
+                //do nothing
+            })
+            builder.show()
         }
 
         //Fill in the beginning time for one of the views
@@ -197,27 +222,8 @@ class AlarmList : AppCompatActivity() {
         }
 
         messageBtn.setOnClickListener {
-            val input = EditText(this)
-            var message = "Do you want to text this number how many tasks you've done? You've completed "
-            message += (Hawk.get("tasksDone") as Int).toString() + " tasks"
-            input.inputType = InputType.TYPE_CLASS_PHONE
-            val builder = AlertDialog.Builder(this)
-            builder.setView(input)
-            builder.setTitle("SMS Your Results")
-            builder.setMessage(message)
-            builder.setPositiveButton("Send", { dialog, which ->
-                if (input.text.toString().length == 10) {
-                    val smsMessage = "Hey, I've finished ${Hawk.get("tasksDone") as Int} tasks so far!"
-                    SmsManager.getDefault().sendTextMessage(input.text.toString(), null,
-                            smsMessage, null, null)
-                } else {
-                    Toast.makeText(this, "Not a valid number", Toast.LENGTH_SHORT).show()
-                }
-            })
-            builder.setNegativeButton("Cancel", { dialog, which ->
-                //do nothing
-            })
-            builder.show()
+            val intent = Intent(this, AlarmList::class.java)
+            startActivity(intent)
         }
 
         listBtn.setOnClickListener {
