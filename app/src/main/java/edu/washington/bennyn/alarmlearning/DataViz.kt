@@ -14,8 +14,7 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-
-
+import com.github.mikephil.charting.utils.ColorTemplate
 
 
 class DataViz : AppCompatActivity() {
@@ -54,6 +53,7 @@ class DataViz : AppCompatActivity() {
                 entries.add(PieEntry(((stats!![1].toFloat() - stats!![0].toFloat()) / stats!![1].toFloat()) * 100f, "Tasks Not Accomplished"))
 
                 val set = PieDataSet(entries, categoryName)
+                set.colors = ColorTemplate.JOYFUL_COLORS.toMutableList()
                 val data = PieData(set)
                 chart.setData(data)
                 chart.setMinimumWidth(500)

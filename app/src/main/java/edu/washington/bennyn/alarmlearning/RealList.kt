@@ -19,12 +19,12 @@ class RealList : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_real_list)
+        Hawk.init(this).build()
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
         menu.setOnClickListener {
             menu.toggle()
         }
         setBtnListeners()
-
         val mapOfAlarms = Hawk.get<MutableMap<String, ArrayList<String>>>("mapOfAlarms")
         val categories = mapOfAlarms.keys.toTypedArray()
         val spinner = findViewById<Spinner>(R.id.categorySpinner)
