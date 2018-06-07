@@ -36,6 +36,7 @@ class AlarmList : AppCompatActivity() {
         val chartsButton = findViewById<ImageView>(R.id.chartsButton)
         val messageBtn = findViewById<ImageView>(R.id.messageButton)
         val listBtn = findViewById<ImageView>(R.id.listButton)
+        val locationBtn = findViewById<ImageView>(R.id.locationButton)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Check if this has been opened before. If so, populate a list of alarms
@@ -59,6 +60,11 @@ class AlarmList : AppCompatActivity() {
 
         chartsButton.setOnClickListener {
             val intent = Intent(this, DataViz::class.java)
+            startActivity(intent)
+        }
+
+        locationBtn.setOnClickListener {
+            val intent = Intent(this, LocationAlarmSetter::class.java)
             startActivity(intent)
         }
 
