@@ -60,13 +60,14 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
             menu.toggle()
         }
         setBtnListeners()
+
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Create persistent LocationManager reference
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-        val fab = findViewById<Button>(R.id.fab)
+        val locationSetBtn = findViewById<Button>(R.id.locationSetBtn)
 
         val permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION)
         ActivityCompat.requestPermissions(this, permissions,0)
@@ -74,7 +75,7 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
         val permission = arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION)
         ActivityCompat.requestPermissions(this, permission,0)
         buildGoogleApiClient()
-        fab.setOnClickListener(this)
+        locationSetBtn.setOnClickListener(this)
     }
 
     override fun onLocationChanged(location: Location?) {
@@ -226,7 +227,7 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
     }
 
     override fun onMarkerDragStart(marker : Marker) {
-        //do something if necessary
+
     }
 
     override fun onMarkerDragEnd(marker : Marker) {

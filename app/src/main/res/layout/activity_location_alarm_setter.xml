@@ -8,16 +8,18 @@
     android:background="#409B8C">
 
     <EditText
-        android:id="@+id/timerLabel"
+        android:id="@+id/alarmNameView"
         android:layout_width="232dp"
         android:layout_height="40dp"
-        android:text="Timer Label"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.197"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.095" />
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="30dp"
+        android:hint="Type in a task"
+        android:fontFamily="@font/pluto_sans_regular"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@+id/locationSetBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -38,35 +40,32 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/fab"
+        android:id="@+id/locationSetBtn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="72dp"
-        android:text="Ok"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/pluto_sans_regular"
+        android:text="OK"
+        app:layout_constraintBottom_toBottomOf="@+id/categoryView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/timerLabel"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/alarmNameView" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/categoryView"
         android:layout_width="235dp"
         android:layout_height="47dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:hint="Category name"
+        android:fontFamily="@font/pluto_sans_regular"
+        android:textColor="@android:color/white"
         android:inputType="textPersonName"
-        android:text="Category"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintEnd_toStartOf="@+id/fab"
-        app:layout_constraintHorizontal_bias="0.758"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/timerLabel"
-        app:layout_constraintVertical_bias="0.68" />
+        app:layout_constraintEnd_toEndOf="@+id/alarmNameView"
+        app:layout_constraintStart_toStartOf="@+id/alarmNameView"
+        app:layout_constraintTop_toBottomOf="@+id/alarmNameView" />
 
     <com.michaldrabik.tapbarmenulib.TapBarMenu
         android:id="@+id/tapBarMenu"
