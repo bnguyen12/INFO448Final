@@ -252,7 +252,7 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
         mMap.addMarker(MarkerOptions().position(point).title("Move marker to desired location").draggable(true))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(point))
         mMap.setOnMarkerDragListener(this)
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 1f))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15f))
     }
 
     override fun onMarkerDragStart(marker : Marker) {
