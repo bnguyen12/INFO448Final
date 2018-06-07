@@ -145,6 +145,7 @@ class AlarmList : AppCompatActivity() {
                     alarmName.text = ""
                     beginTime.text = ""
                     endTime.text = ""
+                    categoryView.text = ""
                 })
                 builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which -> //If not random
                     val intent = Intent(this, AlarmReceiver::class.java)
@@ -196,11 +197,9 @@ class AlarmList : AppCompatActivity() {
 
     // Returns calendar time given a string in this format: hh:mmaa
     private fun stringToTime(givenTime: String): Calendar {
-        val time = givenTime
         val dateFormat = SimpleDateFormat("hh:mmaa")
-        val alarmTime = dateFormat.parse(time)
+        val alarmTime = dateFormat.parse(givenTime)
         val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
         calendar.time = alarmTime
         return calendar
     }
