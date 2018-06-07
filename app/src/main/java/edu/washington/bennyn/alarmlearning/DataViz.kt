@@ -62,6 +62,7 @@ class DataViz : AppCompatActivity() {
                 data.setValueTextSize(14f)
                 data.setValueTextColor(Color.WHITE)
                 chart.setData(data)
+                chart.description.text = ""
                 chart.setMinimumWidth(500)
                 chart.invalidate()
             }
