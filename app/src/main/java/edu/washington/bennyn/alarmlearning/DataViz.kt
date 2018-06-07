@@ -9,6 +9,14 @@ import android.text.InputType
 import android.view.View
 import android.widget.*
 import com.orhanobut.hawk.Hawk
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+
+
+
 
 class DataViz : AppCompatActivity() {
 
@@ -33,8 +41,23 @@ class DataViz : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) { //do something when category is selected
-                categoryTitle.text = categories[position]
+                val categoryName = categories[position]
+                categoryTitle.text = categoryName
                 Hawk.put("currentCategory", categories[position])
+
+                val chart = findViewById<PieChart>(R.id.chart)
+                val entries = ArrayList<PieEntry>()
+
+                val categoryStats = Hawk.get<MutableMap<String, Array<Int>>>("categoryStats")
+                val stats = categoryStats[categoryName]
+                entries.add(PieEntry((stats!![0].toFloat() / stats!![1].toFloat()) * 100f, "Tasks Accomplished"))
+                entries.add(PieEntry(((stats!![1].toFloat() - stats!![0].toFloat()) / stats!![1].toFloat()) * 100f, "Tasks Not Accomplished"))
+
+                val set = PieDataSet(entries, categoryName)
+                val data = PieData(set)
+                chart.setData(data)
+                chart.setMinimumWidth(500)
+                chart.invalidate()
             }
         }
     }

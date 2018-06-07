@@ -50,8 +50,8 @@ class UpdateReceiver: BroadcastReceiver() {
         Hawk.init(context).build()
         val tasksDone = Hawk.get<Int>("tasksDone")
         val tasksTotal = Hawk.get<Int>("tasksTotal")
-        val categoryStats = Hawk.get<MutableMap<String, Array<Int>>>("categoryStats")
-        var stats = categoryStats[categoryName]!!
+        val categoryStats = Hawk.get<MutableMap<String, ArrayList<Int>>>("categoryStats")
+        val stats = categoryStats[categoryName]!!
         if (answer) {
             Hawk.put("tasksDone", tasksDone + 1)
             stats[0]++ //tasks in category accomplished
