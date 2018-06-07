@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -15,13 +14,11 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.telephony.SmsManager
-import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,12 +33,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.orhanobut.hawk.Hawk
+import org.w3c.dom.Text
+import java.util.ArrayList
 
 class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener, View.OnClickListener, com.google.android.gms.location.LocationListener {
     private var locationManager: LocationManager? = null
     private lateinit var mMap: GoogleMap
-    lateinit var mLastLocation: Location
-    lateinit var mCurrLocationMarker: Marker
     lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var REQUEST_LOCATION_CODE = 101
     private var mGoogleApiClient: GoogleApiClient? = null
@@ -78,15 +75,31 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
         locationSetBtn.setOnClickListener(this)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onLocationChanged(location: Location?) {
         // You can now create a LatLng Object for use with maps
         // val latLng = LatLng(location.latitude, location.longitude)
-        Log.d("stuff", "" + location!!.latitude + " " + location!!.longitude)
+        Log.d("locationChanged", "" + location!!.latitude + " " + location!!.longitude)
+        val categoryView = findViewById<TextView>(R.id.categoryView)
+        val alarmName = findViewById<TextView>(R.id.alarmNameView)
+        val setLocation = Hawk.get<LatLng>("alarmLocation")
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient) // current location
+        if (mLocation!!.latitude >= setLocation.latitude - 0.01 &&
+                mLocation!!.latitude <= setLocation.latitude + 0.01 &&
+                mLocation!!.longitude <= setLocation.longitude + 0.01 &&
+                mLocation!!.longitude >= setLocation.longitude - 0.01) {
+
+            // Send intent to receiver when we're near the set location
+            val intent = Intent(this, AlarmReceiver::class.java)
+            intent.putExtra("message", alarmName.text.toString())
+            intent.putExtra("categoryName", categoryView.text.toString())
+            sendBroadcast(intent)
+        }
     }
 
     override fun onClick(v: View?) {
         if (!checkGPSEnabled()) {
-            return
+            Toast.makeText(this, "EnableGPS", Toast.LENGTH_SHORT).show()
         }
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -97,21 +110,47 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
                 //Request Location Permission
                 checkLocationPermission()
             }
-        } else {
-            getLocation();
+        } else { //show set location when the OK button is pressed
+            getLocation()
         }
     }
 
+    // Log.d current location
     @SuppressLint("MissingPermission")
     private fun getLocation() {
+        val alarmName = findViewById<TextView>(R.id.alarmNameView)
+        val categoryView = findViewById<TextView>(R.id.categoryView)
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLocation == null) {
             startLocationUpdates();
         }
-        if (mLocation != null) {
-            Log.d("stuff", ""+ mLocation!!.latitude + mLocation!!.longitude)
+        if (Hawk.get<LatLng>("alarmLocation") != null && !alarmName.text.isBlank() && !categoryView.text.isBlank()) {
+            val location = Hawk.get<LatLng>("alarmLocation")
+
+            // put alarm and its category into a map to use later
+            var map : MutableMap<String, ArrayList<String>> = Hawk.get("mapOfAlarms")
+            val givenCategory = categoryView.text.toString()
+            var categories = map.keys
+            var categoryStats = Hawk.get<MutableMap<String, Array<Int>>>("categoryStats")
+
+            // If the list of categories doesn't contain this category, add it
+            if (!categories.contains(givenCategory)) {
+                map.set(givenCategory, ArrayList<String>())
+                categoryStats.set(givenCategory, arrayOf(0, 0))
+                Hawk.put("categoryStats", categoryStats)
+            }
+            var listOfAlarms = map.get(givenCategory)
+            if (!listOfAlarms!!.contains(alarmName.text.toString())) {
+                listOfAlarms!!.add(alarmName.text.toString())
+            }
+            map.set(givenCategory, listOfAlarms)
+            Hawk.put("mapOfAlarms", map)
+            alarmName.text = ""
+            categoryView.text = ""
+
+            Toast.makeText(this, "Set location: " + location!!.latitude + ", " + location!!.longitude, Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Fill in both fields", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -122,7 +161,8 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
                 .setInterval(UPDATE_INTERVAL)
                 .setFastestInterval(FASTEST_INTERVAL)
         // Request location updates
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this)
@@ -208,22 +248,11 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         val point = LatLng(47.66034376016674, -122.31053721159698)
+        Hawk.put("alarmLocation", point)
         mMap.addMarker(MarkerOptions().position(point).title("Move marker to desired location").draggable(true))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(point))
         mMap.setOnMarkerDragListener(this)
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 1f))
-    }
-
-    //define the listener
-    val locationListener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            print("im here")
-            Log.d("mytag", "" + location.latitude + " " + location.longitude)
-        }
-
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
     }
 
     override fun onMarkerDragStart(marker : Marker) {
@@ -231,13 +260,15 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
     }
 
     override fun onMarkerDragEnd(marker : Marker) {
-        Log.d("mytag", "" + marker.position.latitude + " " + marker.position.longitude)
+        Log.d("markerLocation", "" + marker.position.latitude + " " + marker.position.longitude)
+        Hawk.put("alarmLocation", marker.position)
     }
 
     override fun onMarkerDrag(marker : Marker) {
         //topText.text = getString(R.string.on_marker_drag, marker.position.latitude, marker.position.longitude)
     }
 
+    // Set menu button listeners
     private fun setBtnListeners() {
         val chartsButton = findViewById<ImageView>(R.id.chartsButton)
         val messageBtn = findViewById<ImageView>(R.id.messageButton)
