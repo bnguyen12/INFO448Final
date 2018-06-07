@@ -2,6 +2,7 @@ package edu.washington.bennyn.alarmlearning
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.telephony.SmsManager
@@ -22,6 +23,7 @@ class DataViz : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_data_viz)
+        Hawk.init(this).build()
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
         menu.setOnClickListener {
             menu.toggle()
@@ -46,6 +48,8 @@ class DataViz : AppCompatActivity() {
 
                 val chart = findViewById<PieChart>(R.id.chart)
                 val entries = ArrayList<PieEntry>()
+                chart.holeRadius = 0f
+                chart.transparentCircleRadius = 0f
 
                 val categoryStats = Hawk.get<MutableMap<String, Array<Int>>>("categoryStats")
                 val stats = categoryStats[categoryName]
@@ -55,6 +59,8 @@ class DataViz : AppCompatActivity() {
                 val set = PieDataSet(entries, categoryName)
                 set.colors = ColorTemplate.JOYFUL_COLORS.toMutableList()
                 val data = PieData(set)
+                data.setValueTextSize(14f)
+                data.setValueTextColor(Color.WHITE)
                 chart.setData(data)
                 chart.setMinimumWidth(500)
                 chart.invalidate()

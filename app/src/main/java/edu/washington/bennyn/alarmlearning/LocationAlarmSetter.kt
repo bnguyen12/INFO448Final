@@ -50,6 +50,7 @@ class LocationAlarmSetter : AppCompatActivity(), OnMapReadyCallback, OnMarkerDra
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location_alarm_setter)
+        Hawk.init(this).build()
 
         val menu = findViewById<com.michaldrabik.tapbarmenulib.TapBarMenu>(R.id.tapBarMenu)
 
